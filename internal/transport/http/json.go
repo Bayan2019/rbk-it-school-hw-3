@@ -1,0 +1,41 @@
+package http
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+)
+
+type errorResponse struct {
+	Error string `json:"error"`
+}
+
+func writeJSON(w http.ResponseWriter, status int, v interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	// _ = json.NewEncoder(w).Encode(v)
+	dat, err := json.Marshal(v)
+	if err != nil {
+		log.Printf("Error marshalling JSON: %s", err)
+		w.WriteHeader(500)
+		return
+	}
+	_, err = w.Write(dat)
+	if err != nil {
+		log.Printf("Error setting Message is set: %s", err)
+	}
+}
+
+func writeError(w http.ResponseWriter, code int, msg string, err error) {
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+	// if code > 499 {
+	// 	log.Printf("Responding with 5XX error: %s", msg)
+	// }
+
+	writeJSON(w, code, errorResponse{
+		Error: fmt.Sprintf("%s: %v", msg, err),
+	})
+}

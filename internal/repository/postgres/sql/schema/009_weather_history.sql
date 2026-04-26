@@ -5,7 +5,7 @@ CREATE TABLE weather_history(
     city VARCHAR(255) NOT NULL REFERENCES cities(city) ON DELETE CASCADE,
     temperature INT NOT NULL,
     description VARCHAR(255),
-    requested_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    requested_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- +goose Down

@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 	"time"
+
+	"golang.org/x/time/rate"
 )
 
 type Config struct {
@@ -26,6 +28,11 @@ type DatabaseConfig struct {
 	User     string
 	Password string
 	SSLMode  string
+}
+
+type ApiConfig struct {
+	Limiter   *rate.Limiter
+	UserAgent string
 }
 
 func MustLoad() Config {

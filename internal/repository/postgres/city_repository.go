@@ -148,22 +148,19 @@ func (r *CityRepository) DeleteFromUser(ctx context.Context, userID, cityID int6
 	query := `
 		UPDATE users_cities
 		SET deleted_at = NOW()
-		WHERE user_id = :user_id AND  AND deleted_at IS NULL
+		WHERE user_id = $1
+			AND city_id = $2
+			AND deleted_at IS NULL
 	`
 
-	args := map[string]any{
-		"city_id": cityID,
-		"user_id": userID,
-	}
-
-	result, err := r.db.ExecContext(ctx, query, args)
+	result, err := r.db.ExecContext(ctx, query, userID, cityID)
 	if err != nil {
 		return err
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return err
+		return errors.New("result.RowsAffected()")
 	}
 	if rowsAffected == 0 {
 		return domain.ErrCityNotFound

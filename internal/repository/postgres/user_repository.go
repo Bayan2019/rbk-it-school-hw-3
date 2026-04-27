@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/Bayan2019/rbk-it-school-hw-3/internal/domain"
@@ -71,6 +72,7 @@ func (r *UserRepository) List(ctx context.Context, filter domain.ListUsersFilter
 	}
 
 	if !filter.IncludeDeleted {
+		fmt.Println("IncludeDeleted")
 		builder.WriteString(" AND deleted_at IS NULL")
 	}
 

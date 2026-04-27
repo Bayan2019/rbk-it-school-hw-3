@@ -15,11 +15,23 @@ curl -X POST http://localhost:8080/api/v1/users/1/cities \
 ### Список городов пользователя
 
 ```bash
-curl -X POST http://localhost:8080/api/v1/users/1/cities
+curl -X GET http://localhost:8080/api/v1/users/1/cities
 ```
 
 ### Удалить город
 
 ```bash
 curl -X DELETE http://localhost:8080/api/v1/users/1/cities/3
+```
+
+### Получить погоду по всем городам пользователя
+
+```bash
+curl -X GET http://localhost:8080/api/v1/users/1/weather
+```
+
+### Получить историю с фильтрацией
+
+```bash
+curl -X GET http://localhost:8080/api/v1/users/1/weather/history?city=astana"
 ```

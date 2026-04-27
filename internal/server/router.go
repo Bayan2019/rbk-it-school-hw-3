@@ -35,6 +35,10 @@ func NewRouter(h *Handler) http.Handler {
 				r.Get("/", h.City.ListOfUser)
 				r.Delete("/{city_id}", h.City.DeleteFromUser)
 			})
+			r.Route("/{id}/weather", func(r chi.Router) {
+				r.Get("/", h.Weather.GetWeatherOfUserCities)
+				r.Get("/history", h.Weather.GetWeatherHistoryOfUser)
+			})
 		})
 	})
 

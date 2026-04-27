@@ -26,13 +26,22 @@ func main() {
 
 	userRepo := postgres.NewUserRepository(db)
 	cityRepo := postgres.NewCityRepository(db)
+	weatherRepo := postgres.NewWeatherRepository(db)
 
 	userService := service.NewUserService(userRepo)
 	cityService := service.NewCityService(cityRepo)
+	weatherService := service.NewWeatherService(weatherRepo)
 
 	osmClient := client.NewOsmClient(cfg.Api)
 
-	handler := server.NewHandler(userService, cityService, osmClient)
+	httpClient := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	weatherClient := client.NewWeatherClient(httpClient)
+
+	handler := server.NewHandler(userService, cityService, weatherService,
+		osmClient, weatherClient)
 	router := server.NewRouter(handler)
 
 	srv := &http.Server{

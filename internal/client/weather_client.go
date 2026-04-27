@@ -35,10 +35,10 @@ type openMeteoResponse struct {
 ////// methods
 ////// methods
 
-func (c *WeatherClient) GetCurrentWeather(ctx context.Context, lat, lon float64) (*domain.ProviderWeatherResponse, error) {
+func (c *WeatherClient) GetCurrentWeather(ctx context.Context, lat, lon float64) (domain.ProviderWeatherResponse, error) {
 	u, err := url.Parse(c.baseURL)
 	if err != nil {
-		return nil, fmt.Errorf("parse base url: %w", err)
+		return domain.ProviderWeatherResponse{}, fmt.Errorf("parse base url: %w", err)
 	}
 
 	q := u.Query()
@@ -49,29 +49,26 @@ func (c *WeatherClient) GetCurrentWeather(ctx context.Context, lat, lon float64)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("create request: %w", err)
+		return domain.ProviderWeatherResponse{}, fmt.Errorf("create request: %w", err)
 	}
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("call external api: %w", err)
+		return domain.ProviderWeatherResponse{}, fmt.Errorf("call external api: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("external api returned status: %d", resp.StatusCode)
+		return domain.ProviderWeatherResponse{}, fmt.Errorf("external api returned status: %d", resp.StatusCode)
 	}
 
 	var result openMeteoResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, fmt.Errorf("decode external api response: %w", err)
+		return domain.ProviderWeatherResponse{}, fmt.Errorf("decode external api response: %w", err)
 	}
 
-	return &domain.ProviderWeatherResponse{
+	return domain.ProviderWeatherResponse{
 		Temperature: result.CurrentWeather.Temperature,
-		WindSpeed:   result.CurrentWeather.Windspeed,
-		WeatherCode: result.CurrentWeather.Weathercode,
-		Time:        result.CurrentWeather.Time,
 		Description: mapWeatherCode(result.CurrentWeather.Weathercode),
 	}, nil
 }
@@ -90,20 +87,20 @@ func (c *WeatherClient) GetCurrentWeather(ctx context.Context, lat, lon float64)
 func mapWeatherCode(code int) string {
 	switch code {
 	case 0:
-		return "Ясно"
+		return "sunny"
 	case 1, 2, 3:
-		return "Переменная облачность"
+		return "cloudy"
 	case 45, 48:
-		return "Туман"
+		return "fog"
 	case 51, 53, 55:
-		return "Морось"
+		return "drizzle"
 	case 61, 63, 65:
-		return "Дождь"
+		return "rain"
 	case 71, 73, 75:
-		return "Снег"
+		return "snow"
 	case 95:
-		return "Гроза"
+		return "storm"
 	default:
-		return "Неизвестно"
+		return "unknown"
 	}
 }

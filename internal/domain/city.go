@@ -22,6 +22,12 @@ type City struct {
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
 }
 
+type CityItem struct {
+	City string  `db:"city" json:"city"`
+	Lat  float64 `db:"lat" json:"lat"`
+	Lon  float64 `db:"lon" json:"lon"`
+}
+
 type AddCityInput struct {
 	City string `json:"city"`
 }
@@ -31,11 +37,6 @@ type CreateCityInput struct {
 	Lat  float64 `json:"lat"`
 	Lon  float64 `json:"lon"`
 }
-
-// type Coordinate struct {
-// 	Lat float64 `json:"lat"`
-// 	Lon float64 `json:"lon"`
-// }
 
 type ListCitiesFilter struct {
 	Offset         int  `json:"offset"`

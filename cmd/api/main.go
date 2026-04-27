@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Bayan2019/rbk-it-school-hw-3/internal/client"
 	"github.com/Bayan2019/rbk-it-school-hw-3/internal/config"
 	"github.com/Bayan2019/rbk-it-school-hw-3/internal/repository/postgres"
 	"github.com/Bayan2019/rbk-it-school-hw-3/internal/server"
@@ -24,8 +25,14 @@ func main() {
 	defer db.Close()
 
 	userRepo := postgres.NewUserRepository(db)
+	cityRepo := postgres.NewCityRepository(db)
+
 	userService := service.NewUserService(userRepo)
-	handler := server.NewHandler(userService)
+	cityService := service.NewCityService(cityRepo)
+
+	osmClient := client.NewOsmClient(cfg.Api)
+
+	handler := server.NewHandler(userService, cityService, osmClient)
 	router := server.NewRouter(handler)
 
 	srv := &http.Server{

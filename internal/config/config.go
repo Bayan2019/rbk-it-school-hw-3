@@ -12,6 +12,7 @@ import (
 type Config struct {
 	App      AppConfig
 	Database DatabaseConfig
+	Api      ApiConfig
 }
 
 type AppConfig struct {
@@ -50,6 +51,10 @@ func MustLoad() Config {
 			User:     getEnv("DB_USER", "postgres"),
 			Password: getEnv("DB_PASSWORD", "postgres"),
 			SSLMode:  getEnv("DB_SSLMODE", "disable"),
+		},
+		Api: ApiConfig{
+			Limiter:   rate.NewLimiter(rate.Every(time.Second), 5),
+			UserAgent: getEnv("USER_AGENT", "weather-api/1.0 (example@gmail.com)"),
 		},
 	}
 

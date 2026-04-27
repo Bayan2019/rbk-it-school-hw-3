@@ -1,12 +1,4 @@
-package service
-
-import (
-	"context"
-)
-
-type OsmProvider interface {
-	GetInfoOfCity(ctx context.Context, city string) (Place, error)
-}
+package domain
 
 type Place struct {
 	PlaceID     int      `json:"place_id"`

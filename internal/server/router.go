@@ -30,6 +30,11 @@ func NewRouter(h *Handler) http.Handler {
 			r.Get("/{id}", h.User.GetByID)
 			r.Put("/{id}", h.User.Update)
 			r.Delete("/{id}", h.User.Delete)
+			r.Route("/{id}/cities", func(r chi.Router) {
+				r.Post("/", h.City.Add2User)
+				r.Get("/", h.City.ListOfUser)
+				r.Delete("/{city_id}", h.City.DeleteFromUser)
+			})
 		})
 	})
 

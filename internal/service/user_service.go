@@ -22,6 +22,10 @@ func NewUserService(repo userRepository) *UserService {
 	return &UserService{repo: repo}
 }
 
+////// methods
+////// methods
+////// methods
+
 func (s *UserService) Create(ctx context.Context, input domain.CreateUserInput) (domain.User, error) {
 	if err := input.NormalizeAndValidate(); err != nil {
 		return domain.User{}, err

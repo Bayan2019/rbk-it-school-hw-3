@@ -35,6 +35,10 @@ func NewUserHandler(service userService) *UserHandler {
 	return &UserHandler{service: service}
 }
 
+////// methods
+////// methods
+////// methods
+
 func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var input domain.CreateUserInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {

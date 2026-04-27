@@ -16,12 +16,31 @@ type userService interface {
 	Delete(ctx context.Context, id int64) error
 }
 
-type Handler struct {
-	User *httptransport.UserHandler
+type cityService interface {
+	Create(ctx context.Context, input domain.CreateCityInput) (domain.City, error)
+	Add2User(ctx context.Context, userID int64, filter domain.AddCityInput) error
+	ListOfUser(ctx context.Context, userID int64, filter domain.ListCitiesFilter) ([]domain.City, error)
+	GetByName(ctx context.Context, name string) (domain.City, error)
+	DeleteFromUser(ctx context.Context, userID, cityID int64) error
 }
 
-func NewHandler(userService userService) *Handler {
+type osmProvider interface {
+	GetInfoOfCity(ctx context.Context, city string) (domain.Place, error)
+}
+
+type weatherProvider interface {
+	GetCurrentWeather(ctx context.Context, lat, lon float64) (*domain.ProviderWeatherResponse, error)
+}
+
+type Handler struct {
+	User *httptransport.UserHandler
+	City *httptransport.CityHandler
+	// Osm  *service.OsmProvider
+}
+
+func NewHandler(userService userService, cityService cityService, osmProvider osmProvider) *Handler {
 	return &Handler{
 		User: httptransport.NewUserHandler(userService),
+		City: httptransport.NewCityHandler(cityService, osmProvider),
 	}
 }

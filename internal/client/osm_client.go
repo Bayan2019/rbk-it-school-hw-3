@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/Bayan2019/rbk-it-school-hw-3/internal/config"
-	"github.com/Bayan2019/rbk-it-school-hw-3/internal/service"
+	"github.com/Bayan2019/rbk-it-school-hw-3/internal/domain"
 	"golang.org/x/time/rate"
 )
 
@@ -30,8 +30,12 @@ func NewOsmClient(cfg config.ApiConfig) *OsmClient {
 	}
 }
 
-func (client *OsmClient) GetInfoOfCity(ctx context.Context, city string) (service.Place, error) {
-	var place service.Place
+////// methods
+////// methods
+////// methods
+
+func (client *OsmClient) GetInfoOfCity(ctx context.Context, city string) (domain.Place, error) {
+	var place domain.Place
 
 	url := fmt.Sprintf("%s/search?city=%s&format=json", client.baseURL, city)
 
@@ -49,7 +53,7 @@ func (client *OsmClient) GetInfoOfCity(ctx context.Context, city string) (servic
 	}
 	defer res.Body.Close()
 
-	var places []service.Place
+	var places []domain.Place
 
 	decoder := json.NewDecoder(res.Body)
 	err = decoder.Decode(&places)

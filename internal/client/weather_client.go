@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/Bayan2019/rbk-it-school-hw-3/internal/service"
+	"github.com/Bayan2019/rbk-it-school-hw-3/internal/domain"
 )
 
 type WeatherClient struct {
@@ -31,7 +31,11 @@ type openMeteoResponse struct {
 	} `json:"current_weather"`
 }
 
-func (c *WeatherClient) GetCurrentWeather(ctx context.Context, lat, lon float64) (*service.ProviderWeatherResponse, error) {
+////// methods
+////// methods
+////// methods
+
+func (c *WeatherClient) GetCurrentWeather(ctx context.Context, lat, lon float64) (*domain.ProviderWeatherResponse, error) {
 	u, err := url.Parse(c.baseURL)
 	if err != nil {
 		return nil, fmt.Errorf("parse base url: %w", err)
@@ -63,10 +67,43 @@ func (c *WeatherClient) GetCurrentWeather(ctx context.Context, lat, lon float64)
 		return nil, fmt.Errorf("decode external api response: %w", err)
 	}
 
-	return &service.ProviderWeatherResponse{
+	return &domain.ProviderWeatherResponse{
 		Temperature: result.CurrentWeather.Temperature,
 		WindSpeed:   result.CurrentWeather.Windspeed,
 		WeatherCode: result.CurrentWeather.Weathercode,
 		Time:        result.CurrentWeather.Time,
+		Description: mapWeatherCode(result.CurrentWeather.Weathercode),
 	}, nil
+}
+
+////// accommodating functions
+////// accommodating functions
+////// accommodating functions
+////// accommodating functions
+////// accommodating functions
+////// accommodating functions
+////// accommodating functions
+////// accommodating functions
+////// accommodating functions
+////// accommodating functions
+
+func mapWeatherCode(code int) string {
+	switch code {
+	case 0:
+		return "Ясно"
+	case 1, 2, 3:
+		return "Переменная облачность"
+	case 45, 48:
+		return "Туман"
+	case 51, 53, 55:
+		return "Морось"
+	case 61, 63, 65:
+		return "Дождь"
+	case 71, 73, 75:
+		return "Снег"
+	case 95:
+		return "Гроза"
+	default:
+		return "Неизвестно"
+	}
 }

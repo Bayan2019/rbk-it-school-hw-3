@@ -18,6 +18,10 @@ func NewUserRepository(db *sqlx.DB) *UserRepository {
 	return &UserRepository{db: db}
 }
 
+////// methods
+////// methods
+////// methods
+
 func (r *UserRepository) Create(ctx context.Context, input domain.CreateUserInput) (domain.User, error) {
 	query := `
 		INSERT INTO users (email, password_hash, first_name, last_name, is_active)

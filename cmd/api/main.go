@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os/signal"
@@ -13,9 +14,16 @@ import (
 	"github.com/Bayan2019/rbk-it-school-hw-3/internal/repository/postgres"
 	"github.com/Bayan2019/rbk-it-school-hw-3/internal/server"
 	"github.com/Bayan2019/rbk-it-school-hw-3/internal/service"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Printf("warning: assuming default configuration: .env unreadable: %v\n", err)
+	}
+
 	cfg := config.MustLoad()
 
 	db, err := postgres.NewDB(cfg.Database)

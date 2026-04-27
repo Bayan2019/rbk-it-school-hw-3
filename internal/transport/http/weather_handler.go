@@ -34,13 +34,13 @@ type WeatherHandler struct {
 func (h *WeatherHandler) GetWeatherOfUserCities(w http.ResponseWriter, r *http.Request) {
 	userID, err := parseIDParam(r)
 	if err != nil {
-		h.handleError(w, err)
+		writeJSON(w, http.StatusBadRequest, errorResponse{Error: err.Error(), Message: "invalid path variable"})
 		return
 	}
 
 	cities, err := h.CityService.ListOfUser(r.Context(), userID, domain.ListCitiesFilter{})
 	if err != nil {
-		h.handleError(w, err)
+		writeJSON(w, http.StatusInternalServerError, errorResponse{Error: err.Error(), Message: "couldn't get cities of user"})
 		return
 	}
 
@@ -59,6 +59,18 @@ func (h *WeatherHandler) GetWeatherOfUserCities(w http.ResponseWriter, r *http.R
 		})
 	}
 
+	for _, result := range results {
+		_, err = h.WeatherService.CreateHistory(r.Context(), userID, domain.CityWeatherInput{
+			City:        result.City,
+			Temperature: result.Temperature,
+			Description: result.Description,
+		})
+		if err != nil {
+			h.handleError(w, err)
+			return
+		}
+	}
+
 	writeJSON(w, http.StatusOK, results)
 }
 
@@ -70,13 +82,13 @@ func (h *WeatherHandler) GetWeatherHistoryOfUser(w http.ResponseWriter, r *http.
 	}
 	userID, err := parseIDParam(r)
 	if err != nil {
-		h.handleError(w, err)
+		writeJSON(w, http.StatusBadRequest, errorResponse{Error: err.Error(), Message: "invalid path variable"})
 		return
 	}
 
 	result, err := h.WeatherService.WeatherHistoryOfUser(r.Context(), userID, filter)
 	if err != nil {
-		h.handleError(w, err)
+		writeJSON(w, http.StatusInternalServerError, errorResponse{Error: err.Error(), Message: "couldn't get weather history"})
 		return
 	}
 

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"strings"
 
 	"github.com/Bayan2019/rbk-it-school-hw-3/internal/domain"
@@ -83,13 +84,13 @@ func (r *WeatherRepository) WeatherHistoryOfUser(ctx context.Context, userID int
 
 	query, queryArgs, err := sqlx.Named(builder.String(), args)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("sqlx.Named")
 	}
 	query = r.db.Rebind(query)
 
 	var results []domain.WeatherHistoryResponse
 	if err := r.db.SelectContext(ctx, &results, query, queryArgs...); err != nil {
-		return nil, err
+		return nil, errors.New("r.db.SelectContext")
 	}
 
 	return results, nil

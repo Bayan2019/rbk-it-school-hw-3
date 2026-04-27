@@ -8,7 +8,8 @@ import (
 )
 
 type errorResponse struct {
-	Error string `json:"error"`
+	Message string `json:"message"`
+	Error   string `json:"error"`
 }
 
 func writeJSON(w http.ResponseWriter, status int, v interface{}) {

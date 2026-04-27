@@ -40,7 +40,7 @@ type WeatherResult struct {
 }
 
 type WeatherHistoryResponse struct {
-	UserID      int       `json:"user_id"`
+	UserID      int       `db:"user_id" json:"user_id"`
 	City        string    `db:"city" json:"city,omitempty"`
 	RequestedAt time.Time `db:"requested_at" json:"requested_at"`
 	Temperature int       `db:"temperature" json:"temperature"`

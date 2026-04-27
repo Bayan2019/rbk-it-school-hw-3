@@ -55,14 +55,18 @@ func (r *CityRepository) Create(ctx context.Context, input domain.CreateCityInpu
 }
 
 func (r *CityRepository) Add2User(ctx context.Context, userID int64, input domain.AddCityInput) error {
+	city, err := r.GetByName(ctx, input.City)
+	if err != nil {
+		return err
+	}
 	query := `
-		INSERT INTO users_cities (user_id, city)
-		VALUES (:user_id, :city)
-		RETURNING user_id, city
+		INSERT INTO users_cities (user_id, city_id)
+		VALUES (:user_id, :city_id)
+		RETURNING user_id, city_id
 	`
 
 	args := map[string]any{
-		"city":    input.City,
+		"city_id": city.CityID,
 		"user_id": userID,
 	}
 
@@ -89,10 +93,10 @@ func (r *CityRepository) Add2User(ctx context.Context, userID int64, input domai
 func (r *CityRepository) ListOfUser(ctx context.Context, userID int64, filter domain.ListCitiesFilter) ([]domain.City, error) {
 	builder := strings.Builder{}
 	builder.WriteString(`
-		SELECT c.city_id, c.city, c.lat, c.lon, c.created_at, updated_at
+		SELECT c.city_id, c.city, c.lat, c.lon, c.created_at, c.updated_at
 		FROM cities AS c
 		JOIN users_cities AS uc
-		ON c.user_id = uc.user_id
+		ON c.city_id = uc.city_id
 		WHERE uc.user_id = :user_id
 	`)
 
@@ -109,13 +113,13 @@ func (r *CityRepository) ListOfUser(ctx context.Context, userID int64, filter do
 
 	query, queryArgs, err := sqlx.Named(builder.String(), args)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("sqlx.Named")
 	}
 	query = r.db.Rebind(query)
 
 	var cities []domain.City
 	if err := r.db.SelectContext(ctx, &cities, query, queryArgs...); err != nil {
-		return nil, err
+		return nil, errors.New("r.db.SelectContext")
 	}
 
 	return cities, nil

@@ -53,22 +53,22 @@ func (h *CityHandler) Add2User(w http.ResponseWriter, r *http.Request) {
 
 	userID, err := parseIDParam(r)
 	if err != nil {
-		h.handleError(w, err)
+		writeJSON(w, http.StatusBadRequest, errorResponse{Error: err.Error(), Message: "parsing userID"})
 		return
 	}
 
 	var input domain.AddCityInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		writeJSON(w, http.StatusBadRequest, errorResponse{Error: "invalid json body"})
+		writeJSON(w, http.StatusBadRequest, errorResponse{Error: "invalid json body", Message: "couldn't parse input Body"})
 		return
 	}
 
 	city, err := h.service.GetByName(r.Context(), input.City)
 	if err != nil {
-		if isUniqueViolation(err) {
+		if notFound(err) {
 			place, err := h.provider.GetInfoOfCity(r.Context(), strings.TrimSpace(strings.ToLower(input.City)))
 			if err != nil {
-				h.handleError(w, err)
+				writeJSON(w, http.StatusBadRequest, errorResponse{Error: err.Error(), Message: "couldn't get info from osm"})
 				return
 			}
 
@@ -93,6 +93,8 @@ func (h *CityHandler) Add2User(w http.ResponseWriter, r *http.Request) {
 				h.handleError(w, err)
 				return
 			}
+
+			err = h.service.Add2User(r.Context(), userID, domain.AddCityInput{City: city.City})
 
 			writeJSON(w, http.StatusCreated, cityResponse{Data: city})
 			return
@@ -169,15 +171,15 @@ func (h *CityHandler) handleError(w http.ResponseWriter, err error) {
 	case errors.Is(err, domain.ErrCityNotFound):
 		writeJSON(w, http.StatusNotFound, errorResponse{Error: err.Error()})
 	default:
-		writeJSON(w, http.StatusInternalServerError, errorResponse{Error: "internal server error"})
-		// writeJSON(w, http.StatusInternalServerError, errorResponse{Error: err.Error()})
+		// writeJSON(w, http.StatusInternalServerError, errorResponse{Error: "internal server error"})
+		writeJSON(w, http.StatusInternalServerError, errorResponse{Error: err.Error()})
 	}
 }
 
-func isUniqueViolation(err error) bool {
+func notFound(err error) bool {
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) {
-		return pgErr.Code == "23505"
+		return pgErr.Code == "42P01"
 	}
-	return strings.Contains(strings.ToLower(err.Error()), "duplicate key")
+	return strings.Contains(strings.ToLower(err.Error()), "not found")
 }

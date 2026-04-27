@@ -1,6 +1,8 @@
 package postgres
 
 import (
+	"fmt"
+	"log"
 	"time"
 
 	"github.com/Bayan2019/rbk-it-school-hw-3/internal/config"
@@ -19,6 +21,13 @@ func NewDB(cfg config.DatabaseConfig) (*sqlx.DB, error) {
 	db.SetMaxIdleConns(5)
 	db.SetConnMaxLifetime(30 * time.Minute)
 	db.SetConnMaxIdleTime(5 * time.Minute)
+
+	var dbName string
+	err = db.Get(&dbName, "SELECT current_database()")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Database: %s\n", dbName)
 
 	if err := db.Ping(); err != nil {
 		return nil, err

@@ -43,7 +43,7 @@ curl -X GET http://localhost:8080/api/v1/users/1/weather/history?city=astana"
 
 ## References 
 
-- [Database Schema](https://dbdiagram.io/d/psyandpeople-681886f21ca52373f579ed10)
+- [Database Schema](https://dbdiagram.io/d/rbk-weather-api-69ef55e7c6a36f9c1b925ccc)
 - [Json to Go Struct](https://transform.tools/json-to-go)
 - [Geocoding API](https://open-meteo.com/en/docs/geocoding-api)
 - [Welcome to Nominatim](https://nominatim.openstreetmap.org/ui/search.html)

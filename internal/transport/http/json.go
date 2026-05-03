@@ -37,6 +37,7 @@ func writeError(w http.ResponseWriter, code int, msg string, err error) {
 	// }
 
 	writeJSON(w, code, errorResponse{
-		Error: fmt.Sprintf("%s: %v", msg, err),
+		Error:   fmt.Sprintf("%s: %v", msg, err),
+		Message: msg,
 	})
 }
